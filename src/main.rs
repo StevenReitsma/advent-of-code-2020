@@ -1,7 +1,6 @@
 mod day1;
 use std::time::Instant;
 
-
 fn main() {
     // Day 1 - A
     let start = Instant::now();
