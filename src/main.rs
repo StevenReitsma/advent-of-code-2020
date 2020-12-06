@@ -1,4 +1,5 @@
 mod day1;
+mod day2;
 use std::time::Instant;
 
 fn main() {
@@ -21,4 +22,11 @@ fn main() {
         Ok(r) => println!("Result found in {:?}: {}", end - start, r),
         Err(_) => println!("Couldn't find result"),
     }
+
+    // Day 2 - A
+    let start = Instant::now();
+    let result = day2::compute(day2::get_input().unwrap());
+    let end = Instant::now();
+
+    println!("Result found in {:?}: {}", end - start, result)
 }
