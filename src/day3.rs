@@ -13,13 +13,13 @@ pub fn a(input: Array2<char>, slope_x: usize, slope_y: usize) -> usize {
     let mut treecount = 0;
 
     loop {
-        let tree = input[[pos_y % input.shape()[0], pos_x % input.shape()[1]]] == '#';
+        let tree = input[[pos_y, pos_x % input.shape()[1]]] == '#';
         treecount += tree as usize;
 
         pos_x += slope_x;
         pos_y += slope_y;
 
-        if pos_y > input.shape()[0] {
+        if pos_y >= input.shape()[0] {
             return treecount;
         }
     }
