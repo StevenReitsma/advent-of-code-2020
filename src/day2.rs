@@ -1,10 +1,10 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::error::Error;
+use std::fmt;
 use std::fs;
 use std::iter::FromIterator;
 use std::str::FromStr;
-use std::fmt;
 
 #[derive(Debug, Clone)]
 pub struct ParseError {}
@@ -33,15 +33,13 @@ impl FromStr for Password {
         let caps = RE.captures(string);
 
         match caps {
-            Some(c) => {
-                Ok(Password {
-                    min: c[1].parse()?,
-                    max: c[2].parse()?,
-                    letter: c[3].parse()?,
-                    password: c[4].to_string(),
-                })
-            },
-            None => Err(Box::new(ParseError{}))
+            Some(c) => Ok(Password {
+                min: c[1].parse()?,
+                max: c[2].parse()?,
+                letter: c[3].parse()?,
+                password: c[4].to_string(),
+            }),
+            None => Err(Box::new(ParseError {})),
         }
     }
 }
@@ -51,11 +49,24 @@ pub fn get_input() -> Result<Vec<Password>, Box<dyn Error>> {
     return Result::from_iter(input.lines().map(|x| x.parse()));
 }
 
-pub fn compute(input: Vec<Password>) -> usize {
+pub fn a(input: Vec<Password>) -> usize {
     let mut count: usize = 0;
     for x in input {
         let n_matches = x.password.matches(x.letter).count();
         if n_matches <= x.max && n_matches >= x.min {
+            count += 1;
+        }
+    }
+
+    return count;
+}
+
+pub fn b(input: Vec<Password>) -> usize {
+    let mut count: usize = 0;
+    for x in input {
+        if (x.password.chars().nth(x.min - 1).unwrap() == x.letter)
+            ^ (x.password.chars().nth(x.max - 1).unwrap() == x.letter)
+        {
             count += 1;
         }
     }
@@ -69,7 +80,13 @@ mod test {
 
     #[test]
     fn example_a() {
-        let result = compute(get_input().unwrap());
+        let result = a(get_input().unwrap());
         assert_eq!(result, 614);
+    }
+
+    #[test]
+    fn example_b() {
+        let result = b(get_input().unwrap());
+        assert_eq!(result, 354);
     }
 }

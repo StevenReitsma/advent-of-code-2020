@@ -25,8 +25,15 @@ fn main() {
 
     // Day 2 - A
     let start = Instant::now();
-    let result = day2::compute(day2::get_input().unwrap());
+    let result = day2::a(day2::get_input().unwrap());
     let end = Instant::now();
 
-    println!("Result found in {:?}: {}", end - start, result)
+    println!("Result found in {:?}: {}", end - start, result);
+
+    // Day 2 - A
+    let start = Instant::now();
+    let result = day2::b(day2::get_input().unwrap());
+    let end = Instant::now();
+
+    println!("Result found in {:?}: {}", end - start, result);
 }
