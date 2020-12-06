@@ -38,8 +38,6 @@ pub fn has_valid_field_contents(passport: &String) -> bool {
         }
     }
 
-    println!("{}\n", passport);
-
     return true;
 }
 
