@@ -25,6 +25,17 @@ pub fn a(input: Array2<char>, slope_x: usize, slope_y: usize) -> usize {
     }
 }
 
+pub fn b(input: Array2<char>) -> usize {
+    let slopes = &[(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
+
+    let mut product = 1;
+    for slope in slopes {
+        product *= a(input.clone(), slope.0, slope.1);
+    }
+
+    return product;
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -33,5 +44,11 @@ mod test {
     fn example_a() {
         let result = a(get_input().unwrap(), 3, 1);
         assert_eq!(result, 184);
+    }
+
+    #[test]
+    fn example_b() {
+        let result = b(get_input().unwrap());
+        assert_eq!(result, 2431272960);
     }
 }
