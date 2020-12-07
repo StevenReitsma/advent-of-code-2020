@@ -23,19 +23,11 @@ pub fn a(input: Vec<String>) -> Option<usize> {
 }
 
 pub fn b(input: Vec<String>) -> usize {
-    let mut seat_ids = input.iter().map(|s| get_seat_id(s)).collect::<Vec<usize>>();
-    seat_ids.sort();
+    let max_seat = a(input.clone()).unwrap();
+    let min_seat = 7;
+    let seat_ids = input.iter().map(|s| get_seat_id(s));
 
-    let mut prev = 0;
-    for seat_id in seat_ids {
-        if prev + 2 == seat_id {
-            break;
-        }
-
-        prev = seat_id;
-    }
-
-    return prev + 1;
+    return max_seat * (max_seat + 1) / 2 - min_seat * (min_seat + 1) / 2 - seat_ids.sum::<usize>();
 }
 
 #[cfg(test)]
