@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use countmap::CountMap;
+use std::collections::HashSet;
 use std::fs;
 
 pub fn get_input() -> Vec<String> {
