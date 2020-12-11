@@ -25,7 +25,7 @@ pub fn a(input: &Vec<usize>) -> usize {
 pub fn b(input: &Vec<usize>) -> usize {
     let mut sorted_input = input.clone();
     sorted_input.sort();
-    
+
     let device = *sorted_input.last().unwrap() + 3;
     sorted_input.push(device);
 
