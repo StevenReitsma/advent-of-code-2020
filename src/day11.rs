@@ -25,22 +25,61 @@ pub fn neighbours(input: &Array2<char>, x: usize, y: usize) -> Vec<char> {
     return vec;
 }
 
-pub fn epoch(input: &Array2<char>) -> Array2<char> {
+pub fn line_of_sight_neighbours(input: &Array2<char>, x: usize, y: usize) -> Vec<char> {
+    let mut vec = Vec::<char>::new();
+
+    let directions: Vec<[isize; 2]> = vec![
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+    ];
+
+    for direction in directions {
+        let mut xx = x as isize + direction[0];
+        let mut yy = y as isize + direction[1];
+
+        while xx >= 0 && yy >= 0 && xx < input.shape()[0] as isize && yy < input.shape()[1] as isize {
+            let value = input[[xx as usize, yy as usize]];
+            if value == '#' {
+                vec.push('#');
+                break;
+            } else if value == 'L' {
+                break;
+            }
+
+            xx += direction[0];
+            yy += direction[1];
+        }
+    }
+
+    return vec;
+}
+
+pub fn epoch(
+    input: &Array2<char>,
+    occupancy: usize,
+    neighbour_fn: fn(&Array2<char>, usize, usize) -> Vec<char>,
+) -> Array2<char> {
     let mut copy = input.clone();
 
     for ((x, y), value) in copy.indexed_iter_mut() {
         if *value == 'L'
-            && neighbours(&input, x, y)
+            && neighbour_fn(&input, x, y)
                 .iter()
-                .all(|x| *x == 'L' || *x == '.')
+                .all(|z| *z == 'L' || *z == '.')
         {
             *value = '#';
         } else if *value == '#'
-            && neighbours(&input, x, y)
+            && neighbour_fn(&input, x, y)
                 .iter()
-                .filter(|x| **x == '#')
+                .filter(|z| **z == '#')
                 .count()
-                >= 4
+                >= occupancy
         {
             *value = 'L';
         }
@@ -49,12 +88,15 @@ pub fn epoch(input: &Array2<char>) -> Array2<char> {
     return copy;
 }
 
-pub fn a(input: &Array2<char>) -> usize {
+pub fn converge(
+    input: &Array2<char>,
+    occupancy: usize,
+    neighbour_fn: fn(&Array2<char>, usize, usize) -> Vec<char>,
+) -> usize {
     let mut copy = input.clone();
 
     loop {
-        println!("{}", "iteration");
-        let new_copy = epoch(&copy);
+        let new_copy = epoch(&copy, occupancy, neighbour_fn);
 
         // Check if converged
         if copy == new_copy {
@@ -67,6 +109,14 @@ pub fn a(input: &Array2<char>) -> usize {
     return copy.iter().filter(|x| **x == '#').count();
 }
 
+pub fn a(input: &Array2<char>) -> usize {
+    return converge(input, 4, neighbours);
+}
+
+pub fn b(input: &Array2<char>) -> usize {
+    return converge(input, 5, line_of_sight_neighbours);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -74,6 +124,12 @@ mod test {
     #[test]
     fn example_a() {
         let result = a(&get_input().unwrap());
-        assert_eq!(result, 0);
+        assert_eq!(result, 2324);
+    }
+
+    #[test]
+    fn example_b() {
+        let result = b(&get_input().unwrap());
+        assert_eq!(result, 2068);
     }
 }
