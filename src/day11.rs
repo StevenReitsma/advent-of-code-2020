@@ -45,10 +45,8 @@ pub fn line_of_sight_neighbours(input: &Array2<char>, x: usize, y: usize) -> Vec
 
         while xx >= 0 && yy >= 0 && xx < input.shape()[0] as isize && yy < input.shape()[1] as isize {
             let value = input[[xx as usize, yy as usize]];
-            if value == '#' {
-                vec.push('#');
-                break;
-            } else if value == 'L' {
+            if value == '#' || value == 'L' {
+                vec.push(value);
                 break;
             }
 
