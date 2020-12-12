@@ -1,5 +1,4 @@
 use std::error::Error;
-use std::fmt;
 use std::fs;
 use std::iter::FromIterator;
 use std::str::FromStr;
@@ -57,6 +56,53 @@ pub fn a(input: &Vec<NavInstruction>) -> isize {
     return x.abs() + y.abs();
 }
 
+pub fn rotate_90(x: isize, y: isize) -> (isize, isize) {
+    return (-y, x);
+}
+
+pub fn rotate_90_ccw(x: isize, y: isize) -> (isize, isize) {
+    return (y, -x);
+}
+
+pub fn b(input: &Vec<NavInstruction>) -> isize {
+    let mut x_ship = 0;
+    let mut y_ship = 0;
+
+    let mut x_waypoint = 10;
+    let mut y_waypoint = -1;
+
+    for instruction in input {
+        match instruction.action {
+            'F' => {
+                x_ship += x_waypoint * instruction.amount;
+                y_ship += y_waypoint * instruction.amount;
+            }
+            'N' => y_waypoint -= instruction.amount,
+            'S' => y_waypoint += instruction.amount,
+            'W' => x_waypoint -= instruction.amount,
+            'E' => x_waypoint += instruction.amount,
+            'L' => {
+                for _ in 0..instruction.amount / 90 {
+                    // Rust doesn't support `(x, y) = fn(x, y)` :(
+                    let rotated = rotate_90_ccw(x_waypoint, y_waypoint);
+                    x_waypoint = rotated.0;
+                    y_waypoint = rotated.1;
+                }
+            }
+            'R' => {
+                for _ in 0..instruction.amount / 90 {
+                    let rotated = rotate_90(x_waypoint, y_waypoint);
+                    x_waypoint = rotated.0;
+                    y_waypoint = rotated.1;
+                }
+            }
+            _ => return 0,
+        }
+    }
+
+    return x_ship.abs() + y_ship.abs();
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -65,5 +111,11 @@ mod test {
     fn example_a() {
         let result = a(&get_input().unwrap());
         assert_eq!(result, 1956);
+    }
+
+    #[test]
+    fn example_b() {
+        let result = b(&get_input().unwrap());
+        assert_eq!(result, 126797);
     }
 }
