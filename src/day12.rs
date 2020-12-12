@@ -4,15 +4,6 @@ use std::fs;
 use std::iter::FromIterator;
 use std::str::FromStr;
 
-#[derive(Debug, Clone)]
-pub struct ParseError {}
-impl fmt::Display for ParseError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid input found")
-    }
-}
-impl Error for ParseError {}
-
 #[derive(Clone)]
 pub struct NavInstruction {
     action: char,
