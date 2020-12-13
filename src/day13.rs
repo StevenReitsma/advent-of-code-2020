@@ -1,3 +1,4 @@
+use modinverse::modinverse;
 use std::fs;
 
 pub fn get_input() -> (isize, Vec<isize>) {
@@ -40,50 +41,32 @@ pub fn a(time: isize, buses: &Vec<isize>) -> isize {
 }
 
 // START from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust
-fn egcd(a: i64, b: i64) -> (i64, i64, i64) {
-    if a == 0 {
-        (b, 0, 1)
-    } else {
-        let (g, x, y) = egcd(b % a, a);
-        (g, y - (b / a) * x, x)
-    }
-}
-
-fn mod_inv(x: i64, n: i64) -> Option<i64> {
-    let (g, x, _) = egcd(x, n);
-    if g == 1 {
-        Some((x % n + n) % n)
-    } else {
-        None
-    }
-}
-
-fn chinese_remainder(residues: Vec<i64>, modulii: Vec<i64>) -> Option<i64> {
-    let prod = modulii.iter().product::<i64>();
+fn chinese_remainder(residues: Vec<isize>, modulii: Vec<isize>) -> Option<isize> {
+    let prod = modulii.iter().product::<isize>();
 
     let mut sum = 0;
 
     for (residue, modulus) in residues.iter().zip(modulii) {
         let p = prod / modulus;
-        sum += residue * mod_inv(p, modulus)? * p
+        sum += residue * modinverse(p, modulus)? * p
     }
 
     Some(sum % prod)
 }
 // END from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust
 
-pub fn b(buses: &Vec<isize>) -> i64 {
+pub fn b(buses: &Vec<isize>) -> isize {
     let modulii = buses
         .iter()
         .filter(|x| **x != 0)
-        .map(|x| *x as i64)
+        .map(|x| *x)
         .collect();
 
     let residues = buses
         .iter()
         .enumerate()
         .filter(|&(_, x)| *x != 0)
-        .map(|(i, x)| (*x - i as isize) as i64)
+        .map(|(i, x)| *x - i as isize)
         .collect();
 
     return chinese_remainder(residues, modulii).unwrap();

@@ -15,6 +15,7 @@ version = "0.1.0"
 dependencies = [
  "countmap",
  "lazy_static",
+ "modinverse",
  "ndarray",
  "regex",
 ]
@@ -54,6 +55,15 @@ name = "memchr"
 version = "2.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ee1c47aaa256ecabcaea351eae4a9b01ef39ed810004e298d2511ed284b1525"
+
+[[package]]
+name = "modinverse"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f62f577f148cc1a9466e7065a22e59466a7d537cceba5e77e57181d0f706633"
+dependencies = [
+ "num-integer",
+]
 
 [[package]]
 name = "ndarray"
