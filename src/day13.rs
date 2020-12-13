@@ -39,7 +39,6 @@ pub fn a(time: isize, buses: &Vec<isize>) -> isize {
     return minutes * closest_bus;
 }
 
-
 // START from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust
 fn egcd(a: i64, b: i64) -> (i64, i64, i64) {
     if a == 0 {
@@ -71,7 +70,6 @@ fn chinese_remainder(residues: Vec<i64>, modulii: Vec<i64>) -> Option<i64> {
 
     Some(sum % prod)
 }
-
 // END from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust
 
 pub fn b(buses: &Vec<isize>) -> i64 {
