@@ -66,7 +66,7 @@ pub fn b(buses: &Vec<isize>) -> isize {
         .iter()
         .enumerate()
         .filter(|&(_, x)| *x != 0)
-        .map(|(i, x)| *x - i as isize)
+        .map(|(i, x)| (-(i as isize)).rem_euclid(*x))
         .collect();
 
     return chinese_remainder(residues, modulii).unwrap();
