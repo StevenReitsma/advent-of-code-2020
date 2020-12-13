@@ -19,8 +19,9 @@ pub fn get_input() -> (isize, Vec<isize>) {
 pub fn a(time: isize, buses: &Vec<isize>) -> isize {
     let mut closest_bus = 0;
     let mut waiting = 1.;
+
     for bus in buses {
-        let ratio: f32 = time as f32 / *bus as f32;
+        let ratio = time as f32 / *bus as f32;
         let remainder = ratio.ceil() - ratio;
 
         if remainder < waiting {
