@@ -56,11 +56,7 @@ fn chinese_remainder(residues: Vec<isize>, modulii: Vec<isize>) -> Option<isize>
 // END from https://rosettacode.org/wiki/Chinese_remainder_theorem#Rust
 
 pub fn b(buses: &Vec<isize>) -> isize {
-    let modulii = buses
-        .iter()
-        .filter(|x| **x != 0)
-        .map(|x| *x)
-        .collect();
+    let modulii = buses.iter().filter(|x| **x != 0).map(|x| *x).collect();
 
     let residues = buses
         .iter()
