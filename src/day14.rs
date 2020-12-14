@@ -16,10 +16,55 @@ pub fn set_address(memmap: &mut HashMap<isize, isize>, address: isize, mem: isiz
     memmap.insert(address, masked_mem);
 }
 
-pub fn process(input: &Vec<String>, address_fn: fn(&mut HashMap<isize, isize>, isize, isize, &String)) -> isize {
+fn set_all_addresses(
+    memmap: &mut HashMap<isize, isize>,
+    address: &String,
+    mem: isize,
+    mask: &String,
+    position: usize,
+) {
+    if position == mask.len() {
+        memmap.insert(isize::from_str_radix(address, 2).unwrap(), mem);
+        return;
+    }
+
+    if mask.chars().nth(position).unwrap() == 'X' {
+        let mut characters: Vec<char> = address.chars().collect();
+        characters[position] = '0';
+
+        let fill_0 = &characters.iter().collect();
+
+        characters[position] = '1';
+
+        let fill_1 = &characters.iter().collect();
+
+        set_all_addresses(memmap, fill_0, mem, mask, position + 1);
+        set_all_addresses(memmap, fill_1, mem, mask, position + 1);
+    } else {
+        set_all_addresses(memmap, address, mem, mask, position + 1);
+    }
+}
+
+pub fn set_masked_address(
+    memmap: &mut HashMap<isize, isize>,
+    address: isize,
+    mem: isize,
+    mask: &String,
+) {
+    let ormask = isize::from_str_radix(&mask.replace("X", "0"), 2).unwrap();
+    let masked_address = address | ormask;
+
+    let binary_string = format!("{:036b}", masked_address);
+    set_all_addresses(memmap, &binary_string, mem, mask, 0);
+}
+
+pub fn process(
+    input: &Vec<String>,
+    address_fn: fn(&mut HashMap<isize, isize>, isize, isize, &String),
+) -> isize {
     lazy_static! {
-        static ref MaskRE: Regex = Regex::new(r"mask = (.*)").unwrap();
-        static ref MemRE: Regex = Regex::new(r"mem\[(\d*)\] = (\d*)").unwrap();
+        static ref MASK_RE: Regex = Regex::new(r"mask = (.*)").unwrap();
+        static ref MEM_RE: Regex = Regex::new(r"mem\[(\d*)\] = (\d*)").unwrap();
     }
 
     let mut mask: String = String::from("");
@@ -27,15 +72,15 @@ pub fn process(input: &Vec<String>, address_fn: fn(&mut HashMap<isize, isize>, i
 
     for instruction in input {
         if instruction.starts_with("mask") {
-            mask = MaskRE.captures(instruction).unwrap()[1].to_string();
+            mask = MASK_RE.captures(instruction).unwrap()[1].to_string();
             continue;
         }
 
-        let caps = MemRE.captures(instruction).unwrap();
+        let caps = MEM_RE.captures(instruction).unwrap();
         let address: isize = caps[1].parse().unwrap();
         let mem: isize = caps[2].parse().unwrap();
 
-        set_address(&mut memmap, address, mem, &mask);
+        address_fn(&mut memmap, address, mem, &mask);
     }
 
     return memmap.values().sum();
@@ -46,7 +91,7 @@ pub fn a(input: &Vec<String>) -> isize {
 }
 
 pub fn b(input: &Vec<String>) -> isize {
-    return process(input, set_address);
+    return process(input, set_masked_address);
 }
 
 #[cfg(test)]
@@ -64,6 +109,6 @@ mod test {
     fn example_b() {
         let input = &get_input();
         let result = b(input);
-        assert_eq!(result, 0);
+        assert_eq!(result, 5142195937660);
     }
 }
