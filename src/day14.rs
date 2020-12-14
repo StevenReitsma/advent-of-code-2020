@@ -16,7 +16,7 @@ pub fn set_address(memmap: &mut HashMap<isize, isize>, address: isize, mem: isiz
     memmap.insert(address, masked_mem);
 }
 
-pub fn a(input: &Vec<String>) -> isize {
+pub fn process(input: &Vec<String>, address_fn: fn(&mut HashMap<isize, isize>, isize, isize, &String)) -> isize {
     lazy_static! {
         static ref MaskRE: Regex = Regex::new(r"mask = (.*)").unwrap();
         static ref MemRE: Regex = Regex::new(r"mem\[(\d*)\] = (\d*)").unwrap();
@@ -41,6 +41,14 @@ pub fn a(input: &Vec<String>) -> isize {
     return memmap.values().sum();
 }
 
+pub fn a(input: &Vec<String>) -> isize {
+    return process(input, set_address);
+}
+
+pub fn b(input: &Vec<String>) -> isize {
+    return process(input, set_address);
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -49,6 +57,13 @@ mod test {
     fn example_a() {
         let input = &get_input();
         let result = a(input);
-        assert_eq!(result, 370);
+        assert_eq!(result, 11501064782628);
+    }
+
+    #[test]
+    fn example_b() {
+        let input = &get_input();
+        let result = b(input);
+        assert_eq!(result, 0);
     }
 }
