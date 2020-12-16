@@ -1,5 +1,6 @@
 use lazy_static::lazy_static;
 use regex::Regex;
+use std::collections::HashSet;
 use std::fs;
 
 type Ticket = Vec<isize>;
@@ -13,8 +14,8 @@ pub struct Range {
 }
 
 impl Range {
-    pub fn is_invalid(&self, num: isize) -> bool {
-        return (num >= self.max1 && num > self.max2) || (num < self.min1 && num < self.min2);
+    pub fn is_valid(&self, num: isize) -> bool {
+        return (num >= self.min1 && num <= self.max1) || (num >= self.min2 && num <= self.max2);
     }
 }
 
@@ -72,13 +73,65 @@ pub fn a(tickets: &Vec<Ticket>, ranges: &Vec<Range>) -> isize {
 
     for t in tickets {
         for num in t {
-            if ranges.iter().all(|r| r.is_invalid(*num)) {
+            if !ranges.iter().any(|r| r.is_valid(*num)) {
                 errors += num;
             }
         }
     }
 
     return errors;
+}
+
+pub fn b(my_ticket: &Ticket, tickets: &Vec<Ticket>, ranges: &Vec<Range>) -> isize {
+    // Find all valid tickets
+    let mut valid_tickets = Vec::<&Ticket>::new();
+
+    'tickets: for t in tickets {
+        for num in t {
+            if !ranges.iter().any(|r| r.is_valid(*num)) {
+                continue 'tickets;
+            }
+        }
+
+        valid_tickets.push(t);
+    }
+
+    valid_tickets.push(my_ticket);
+
+    // Enumerate all possible orderings
+    let mut possibilities = Vec::<HashSet<usize>>::new();
+
+    for position in 0..my_ticket.len() {
+        let mut allowed_ranges = HashSet::<usize>::new();
+
+        for (i, range) in ranges.iter().enumerate() {
+            let mut numbers = valid_tickets.iter().map(|t| t[position]);
+            if numbers.all(|n| range.is_valid(n)) {
+                allowed_ranges.insert(i);
+            }
+        }
+
+        possibilities.push(allowed_ranges);
+    }
+
+    let mut assigned = [0; 20];
+
+    // While some position has only one possible field
+    while let Some(i) = possibilities.iter().position(|s| s.len() == 1) {
+        let v = *possibilities[i].iter().next().unwrap();
+        assigned[i] = v;
+        // Remove it from all sets of possibilities
+        for s in &mut possibilities {
+            s.remove(&v);
+        }
+    }
+
+    return assigned
+        .iter()
+        .enumerate()
+        .filter(|(_, &rule)| rule < 6)  // first six are departure fields
+        .map(|(i, _)| my_ticket[i])
+        .product();
 }
 
 #[cfg(test)]
@@ -89,6 +142,13 @@ mod test {
     fn example_a() {
         let inputs = &get_input();
         let result = a(&inputs.1, &inputs.2);
-        assert_eq!(result, 0);
+        assert_eq!(result, 20975);
+    }
+
+    #[test]
+    fn example_b() {
+        let inputs = &get_input();
+        let result = b(&inputs.0, &inputs.1, &inputs.2);
+        assert_eq!(result, 910339449193);
     }
 }
