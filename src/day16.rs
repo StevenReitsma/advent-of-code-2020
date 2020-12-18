@@ -129,7 +129,7 @@ pub fn b(my_ticket: &Ticket, tickets: &Vec<Ticket>, ranges: &Vec<Range>) -> isiz
     return assigned
         .iter()
         .enumerate()
-        .filter(|(_, &rule)| rule < 6)  // first six are departure fields
+        .filter(|(_, &rule)| rule < 6) // first six are departure fields
         .map(|(i, _)| my_ticket[i])
         .product();
 }
