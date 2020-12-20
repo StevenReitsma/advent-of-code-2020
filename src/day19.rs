@@ -83,9 +83,6 @@ pub fn a(rules: &Vec<String>, messages: &Vec<String>, b: bool) -> usize {
 
     // Compile all regexes
     for (id, rule) in regex_rules {
-        if id == 8 || id == 11 || id == 0 {
-            println!("{}: {}", id, rule);
-        }
         regex_compiled.insert(id, Regex::new(&rule).unwrap());
     }
 
