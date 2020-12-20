@@ -23,7 +23,7 @@ pub fn parse_rules(rules: &Vec<String>, b: bool) -> HashMap<isize, String> {
         static ref NUM_REGEX: Regex = Regex::new(r" (\d{1,3}) ").unwrap();
     }
 
-    // First add all rules to hashmap
+    // First add all rules to a hashmap
     let mut rule_map = rules
         .iter()
         .map(|x| {
@@ -38,6 +38,8 @@ pub fn parse_rules(rules: &Vec<String>, b: bool) -> HashMap<isize, String> {
     // Modify rules for B
     if b {
         rule_map.insert(8, " 42 + ".to_string());
+
+        // Unfortunately regular grammar does not support L = {a^n b^n} but we can do a workaround for finite n ∈ [1..4]
         rule_map.insert(
             11,
             " 42 31 | 42 {2} 31 {2} | 42 {3} 31 {3} | 42 {4} 31 {4} ".to_string(),
@@ -69,27 +71,21 @@ pub fn parse_rules(rules: &Vec<String>, b: bool) -> HashMap<isize, String> {
         rule_map = new_rule_map.clone();
     }
 
-    // Clean up quotes and spaces
-    for (_, rule) in rule_map.iter_mut() {
-        *rule = format!("^({})$", rule.replace(" ", "").replace("\"", ""));
-    }
-
-    return rule_map;
+    // Clean up whitespace and quotes
+    return rule_map
+        .iter()
+        .map(|(id, rule)| (*id, rule.replace(" ", "").replace("\"", "")))
+        .collect();
 }
 
 pub fn a(rules: &Vec<String>, messages: &Vec<String>, b: bool) -> usize {
     let regex_rules = parse_rules(rules, b);
-    let mut regex_compiled = HashMap::<isize, Regex>::new();
-
-    // Compile all regexes
-    for (id, rule) in regex_rules {
-        regex_compiled.insert(id, Regex::new(&rule).unwrap());
-    }
+    let regex_compiled = Regex::new(&regex_rules[&0]).unwrap();
 
     // Find valid messages
     return messages
         .iter()
-        .filter(|m| regex_compiled[&0].is_match(m))
+        .filter(|m| regex_compiled.is_match(m))
         .count();
 }
 
