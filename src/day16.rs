@@ -34,7 +34,7 @@ pub fn get_input() -> (Ticket, Vec<Ticket>, Vec<Range>) {
     let mut ranges = Vec::<Range>::new();
     let mut tickets = Vec::<Ticket>::new();
 
-    // First split is a list of ticketes
+    // First split is a list of tickets
     for range_string in splits[0].lines() {
         let fields = RANGE_RE.captures(range_string).unwrap();
 
