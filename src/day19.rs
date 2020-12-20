@@ -74,7 +74,12 @@ pub fn parse_rules(rules: &Vec<String>, b: bool) -> HashMap<isize, String> {
     // Clean up whitespace and quotes
     return rule_map
         .iter()
-        .map(|(id, rule)| (*id, rule.replace(" ", "").replace("\"", "")))
+        .map(|(id, rule)| {
+            (
+                *id,
+                format!("^({})$", rule.replace(" ", "").replace("\"", "")),
+            )
+        })
         .collect();
 }
 
